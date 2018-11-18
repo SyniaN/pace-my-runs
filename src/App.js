@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-
+import DistanceInput from "./DistanceInput";
+import TimeInput from "./TimeInput";
+import PaceInput from "./PaceInput";
+import {
+  calculateTime,
+  calculatePace,
+  calculatePaceOrTimeOrNeither
+} from "./util";
 class App extends Component {
   constructor() {
     super();
@@ -14,47 +21,6 @@ class App extends Component {
     this.onInputChange = this.onInputChange.bind(this);
   }
 
-  calculatePace(hr, min, sec, dist) {
-    const time = hr * 60 + min + sec / 60;
-    const pace = time / dist;
-    return {
-      pace_min: Math.floor(pace),
-      pace_sec: Math.floor((pace % 1) * 60)
-    };
-  }
-
-  calculateTime(min, sec, dist) {
-    const pace = min + sec / 60;
-    const time = pace * dist;
-    return {
-      time_hr: Math.floor(time / 60),
-      time_min: Math.floor(time % 60),
-      time_sec: Math.floor(time % 3600)
-    };
-  }
-
-  calculatePaceOrTimeOrNeither(
-    time_hr,
-    time_min,
-    time_sec,
-    pace_min,
-    pace_sec,
-    dist
-  ) {
-    const time = time_hr * 60 + time_min + time_sec / 60;
-    const pace = pace_min + pace_sec / 60;
-
-    if (pace > 0) {
-      return this.calculateTime(pace_min, pace_sec, dist);
-    }
-
-    if (time > 0) {
-      return this.calculatePace(time_hr, time_min, time_sec, dist);
-    }
-
-    return {};
-  }
-
   onInputChange(inputName, evt) {
     const value = parseInt(evt.target.value);
 
@@ -63,26 +29,26 @@ class App extends Component {
       const inputType = inputName.split("_")[0];
       const calculatedResults =
         inputType === "pace"
-          ? this.calculateTime(
+          ? calculateTime(
               stateClone.pace_min,
               stateClone.pace_sec,
               stateClone.dist
             )
           : inputType === "time"
-          ? this.calculatePace(
-              stateClone.time_hr,
-              stateClone.time_min,
-              stateClone.time_sec,
-              stateClone.dist
-            )
-          : this.calculatePaceOrTimeOrNeither(
-              stateClone.time_hr,
-              stateClone.time_min,
-              stateClone.time_sec,
-              stateClone.pace_min,
-              stateClone.pace_sec,
-              stateClone.dist
-            );
+            ? calculatePace(
+                stateClone.time_hr,
+                stateClone.time_min,
+                stateClone.time_sec,
+                stateClone.dist
+              )
+            : calculatePaceOrTimeOrNeither(
+                stateClone.time_hr,
+                stateClone.time_min,
+                stateClone.time_sec,
+                stateClone.pace_min,
+                stateClone.pace_sec,
+                stateClone.dist
+              );
 
       const newState = {
         ...stateClone,
@@ -97,48 +63,23 @@ class App extends Component {
 
   render() {
     return (
-      <div>
-        <div>
-          <label>distance: </label>
-          <input
-            type="number"
-            onChange={evt => this.onInputChange("dist", evt)}
-            value={this.state.dist}
-          />
-          km
-        </div>
-        <div>
-          <label>time: </label>
-          <input
-            onChange={evt => this.onInputChange("time_hr", evt)}
-            value={this.state.time_hr}
-          />
-          :
-          <input
-            onChange={evt => this.onInputChange("time_min", evt)}
-            value={this.state.time_min}
-          />
-          :
-          <input
-            onChange={evt => this.onInputChange("time_sec", evt)}
-            value={this.state.time_sec}
-          />
-        </div>
-        <div>
-          <label>pace: </label>
-          <input
-            type="number"
-            onChange={evt => this.onInputChange("pace_min", evt)}
-            value={this.state.pace_min}
-          />
-          :
-          <input
-            type="number"
-            onChange={evt => this.onInputChange("pace_sec", evt)}
-            value={this.state.pace_sec}
-          />
-        </div>
-      </div>
+      <>
+        <DistanceInput
+          onInputChange={this.onInputChange}
+          dist={this.state.dist}
+        />
+        <TimeInput
+          onInputChange={this.onInputChange}
+          time_hr={this.state.time_hr}
+          time_min={this.state.time_min}
+          time_sec={this.state.time_sec}
+        />
+        <PaceInput
+          onInputChange={this.onInputChange}
+          pace_min={this.state.pace_min}
+          pace_sec={this.state.pace_sec}
+        />
+      </>
     );
   }
 }
