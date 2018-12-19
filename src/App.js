@@ -18,6 +18,7 @@ class App extends Component {
       pace_min: 0,
       pace_sec: 0
     };
+
     this.onInputChange = this.onInputChange.bind(this);
   }
 
@@ -35,20 +36,20 @@ class App extends Component {
               stateClone.dist
             )
           : inputType === "time"
-            ? calculatePace(
-                stateClone.time_hr,
-                stateClone.time_min,
-                stateClone.time_sec,
-                stateClone.dist
-              )
-            : calculatePaceOrTimeOrNeither(
-                stateClone.time_hr,
-                stateClone.time_min,
-                stateClone.time_sec,
-                stateClone.pace_min,
-                stateClone.pace_sec,
-                stateClone.dist
-              );
+          ? calculatePace(
+              stateClone.time_hr,
+              stateClone.time_min,
+              stateClone.time_sec,
+              stateClone.dist
+            )
+          : calculatePaceOrTimeOrNeither(
+              stateClone.time_hr,
+              stateClone.time_min,
+              stateClone.time_sec,
+              stateClone.pace_min,
+              stateClone.pace_sec,
+              stateClone.dist
+            );
 
       const newState = {
         ...stateClone,
